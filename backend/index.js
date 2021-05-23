@@ -29,14 +29,14 @@ const MosesModule = mongoose.model('MosesModule', new mongoose.Schema({
 let modules;
 https(config.resources.moses.getLinkToAllModules(), (data) => { modules = Modul.getModules(data) })
 
-app.get('/moses', function (req, res) {
+app.get('/moses', (req, res) => {
     res.send(modules)
 })
 
-app.get('/moses/:id', function (req, res) {
+app.get('/moses/:id', (req, res) => {
     const modulNummer = req.params.id
     if (modulNummer) {
-        MosesModule.findOne({ 'nummer': modulNummer }, function (err, doc) {
+        MosesModule.findOne({ 'nummer': modulNummer }, (err, doc) => {
             if (err || !doc) {
                 console.log("no db entry found. crawling, saving in db and sending...")
                 const modulInfo = modules.find(e => e.number == modulNummer)
