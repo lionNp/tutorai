@@ -1,14 +1,11 @@
 class Modul {
     static getModules(html) {
         const regex = /<a href=".*?nummer=(\d*).*?version=(\d*)" title="Modulbeschreibung anzeigen">(.*?)<\/a>/g
-        let results = [];
-        while (true) {
-            const result = regex.exec(html);
-            if (result) {
-                results.push({ number: result[1], version: result[2], titel: result[3] })
-            } else {
-                break;
-            }
+        let results = []
+        let result = regex.exec(html)
+        while (result) {
+            results.push({ number: result[1], version: result[2], titel: result[3] })
+            result = regex.exec(html)
         }
         return results
     }
