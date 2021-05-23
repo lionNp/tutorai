@@ -30,7 +30,7 @@ let modules;
 https(config.resources.moses.getLinkToAllModules(), (data) => { modules = Modul.getModules(data) })
 
 app.get('/moses', (req, res) => {
-    res.send(modules)
+    res.send({ modules: modules })
 })
 
 app.get('/moses/:id', (req, res) => {
