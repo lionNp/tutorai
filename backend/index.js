@@ -35,10 +35,7 @@ app.get('/moses', function (req, res) {
 
 app.get('/moses/:id', function (req, res) {
     const modulNummer = req.params.id
-    if (!modulNummer) {
-        res.send({ err: "Wrong module number" })
-    }
-    else {
+    if (modulNummer) {
         MosesModule.findOne({ 'nummer': modulNummer }, function (err, doc) {
             if (err || !doc) {
                 console.log("no db entry found. crawling, saving in db and sending...")
@@ -70,6 +67,9 @@ app.get('/moses/:id', function (req, res) {
                 res.send(doc)
             }
         })
+    }
+    else {
+        res.send({ err: "Wrong module number" })
     }
 })
 
