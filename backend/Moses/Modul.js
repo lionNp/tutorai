@@ -64,7 +64,7 @@ class Modul {
 function getFirstGroupOfRegex(regex, data) {
     const result = regex.exec(data)
     if (result && result.length > 1)
-        return result[1]
+        return result[1].trim()
     return ""
 }
 
