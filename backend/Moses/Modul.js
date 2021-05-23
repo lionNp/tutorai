@@ -1,10 +1,3 @@
-function getFirstGroupOfRegex(regex, data) {
-    const result = regex.exec(data)
-    if (result && result.length > 1)
-        return result[1]
-    return ""
-}
-
 class Modul {
     static getModules(html) {
         const regex = /<a href=".*?nummer=(\d*).*?version=(\d*)" title="Modulbeschreibung anzeigen">(.*?)<\/a>/g
@@ -59,6 +52,13 @@ class Modul {
         const regex = /E-Mail-Adresse:<\/label>[\s\S]*?\/>(.*)/
         return getFirstGroupOfRegex(regex, html)
     }
+}
+
+function getFirstGroupOfRegex(regex, data) {
+    const result = regex.exec(data)
+    if (result && result.length > 1)
+        return result[1]
+    return ""
 }
 
 module.exports = Modul
