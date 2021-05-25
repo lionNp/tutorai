@@ -37,13 +37,13 @@ app.get('/moses', (req, res) => {
 app.get('/moses/:id', (req, res) => {
     const moduleNummer = req.params.id
     if (!moduleNummer) {
-        res.send({ err: "Wrong module not found" });
+        res.send({ err: "Wrong module not found" })
         return
     } else if (!moduleInfo){
-        res.send({ err: "Module Info not found" });
+        res.send({ err: "Module Info not found" })
         return
     }
-    findModuleWithModuleNumber(moduleNummer, res);
+    findModuleWithModuleNumber(moduleNummer, res)
 })
 
 function findModuleWithModuleNumber(modulNummer, res) {
@@ -52,7 +52,7 @@ function findModuleWithModuleNumber(modulNummer, res) {
             console.log("no db entry found. crawling, saving in db and sending...")
             const modulInfo = modules.find(e => e.number === modulNummer)
             https(config.resources.moses.getFullLinkTo(modulInfo.number, modulInfo.version), (data) => {
-                const newModule = createModule(modulNummer, data);
+                const newModule = createModule(modulNummer, data)
                 res.send(newModule)
             })
         } else {
@@ -76,7 +76,7 @@ function createModule(modulNummer, data) {
     newModule.ansprechpartner = Modul.getAnsprechpartner(data)
     newModule.email = Modul.getEmail(data)
     newModule.save()
-    return newModule;
+    return newModule
 }
 
 app.listen(config.network.port, () => { console.log(`Backend listening at http://localhost:${config.network.port}`) })
