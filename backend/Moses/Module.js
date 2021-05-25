@@ -1,10 +1,10 @@
-class Modul {
+class Module {
     static getModules(html) {
         const regex = /<a href=".*?nummer=(\d*).*?version=(\d*)" title="Modulbeschreibung anzeigen">(.*?)<\/a>/g
         let results = []
         let result = regex.exec(html)
         while (result) {
-            results.push({ number: result[1], version: result[2], titel: result[3] })
+            results.push({ number: result[1], version: result[2], title: result[3] })
             result = regex.exec(html)
         }
         return results
@@ -68,4 +68,4 @@ function getFirstGroupOfRegex(regex, data) {
     return ""
 }
 
-module.exports = Modul
+module.exports = Module

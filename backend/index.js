@@ -3,7 +3,7 @@ const mongoose = require('mongoose')
 
 const config = require('./config')
 const https = require('./https')
-const Modul = require('./Moses/Modul')
+const Module = require('./Moses/Module')
 const app = express()
 
 mongoose.connect(config.network.mongoURI, {
@@ -28,33 +28,34 @@ const MosesModule = mongoose.model('MosesModule', new mongoose.Schema({
 }))
 
 let modules
-https(config.resources.moses.getLinkToAllModules(), (data) => { modules = Modul.getModules(data) })
+https(config.resources.moses.getLinkToAllModules(), (data) => { modules = Module.getModules(data) })
 
 app.get('/moses', (req, res) => {
     res.send({ modules: modules })
 })
 
 app.get('/moses/:id', (req, res) => {
-    const moduleNummer = req.params.id
-    if (!moduleNummer) {
+    const moduleNumber = req.params.id
+    if (!moduleNumber) {
         res.send({ err: "Wrong module not found" })
         return
-    } else if (!moduleInfo){
-        res.send({ err: "Module Info not found" })
-        return
     }
-    findModuleWithModuleNumber(moduleNummer, res)
+    findModuleWithModuleNumber(moduleNumber, res)
 })
 
-function findModuleWithModuleNumber(modulNummer, res) {
-    MosesModule.findOne({'nummer': modulNummer}, function (err, doc) {
+function findModuleWithModuleNumber(moduleNumber, res) {
+    MosesModule.findOne({ 'nummer': moduleNumber }, function (err, doc) {
         if (err || !doc) {
-            console.log("no db entry found. crawling, saving in db and sending...")
-            const modulInfo = modules.find(e => e.number === modulNummer)
-            https(config.resources.moses.getFullLinkTo(modulInfo.number, modulInfo.version), (data) => {
-                const newModule = createModule(modulNummer, data)
-                res.send(newModule)
-            })
+            const modulInfo = modules.find(e => e.number === moduleNumber)
+            if (modulInfo) {
+                console.log("no db entry found. crawling, saving in db and sending...")
+                https(config.resources.moses.getFullLinkTo(modulInfo.number, modulInfo.version), (data) => {
+                    const newModule = createModule(moduleNumber, data)
+                    res.send(newModule)
+                })
+            } else {
+                res.send({ err: "Wrong module not found" })
+            }
         } else {
             console.log("sending data from db...")
             res.send(doc)
@@ -65,16 +66,16 @@ function findModuleWithModuleNumber(modulNummer, res) {
 function createModule(modulNummer, data) {
     const newModule = new MosesModule()
     newModule.nummer = modulNummer
-    newModule.titel = Modul.getTitel(data)
-    newModule.lernergebnisse = Modul.getLernergebnisse(data)
-    newModule.lehrinhalte = Modul.getLehrinhalte(data)
-    newModule.fakultaet = Modul.getFakultaet(data)
-    newModule.sekretariat = Modul.getSekretariat(data)
-    newModule.institut = Modul.getInstitut(data)
-    newModule.fachgebiet = Modul.getFachgebiet(data)
-    newModule.verantwortlich = Modul.getVerantwortlich(data)
-    newModule.ansprechpartner = Modul.getAnsprechpartner(data)
-    newModule.email = Modul.getEmail(data)
+    newModule.titel = Module.getTitel(data)
+    newModule.lernergebnisse = Module.getLernergebnisse(data)
+    newModule.lehrinhalte = Module.getLehrinhalte(data)
+    newModule.fakultaet = Module.getFakultaet(data)
+    newModule.sekretariat = Module.getSekretariat(data)
+    newModule.institut = Module.getInstitut(data)
+    newModule.fachgebiet = Module.getFachgebiet(data)
+    newModule.verantwortlich = Module.getVerantwortlich(data)
+    newModule.ansprechpartner = Module.getAnsprechpartner(data)
+    newModule.email = Module.getEmail(data)
     newModule.save()
     return newModule
 }
