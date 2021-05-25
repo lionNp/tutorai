@@ -5,7 +5,8 @@ const config = require('./config')
 const https = require('./https')
 const Modul = require('./Moses/Modul')
 const app = express()
-const conn = mongoose.connect(config.network.mongoURI, {
+
+mongoose.connect(config.network.mongoURI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useFindAndModify: false,
@@ -24,9 +25,9 @@ const MosesModule = mongoose.model('MosesModule', new mongoose.Schema({
     verantwortlich: { type: String },
     ansprechpartner: { type: String },
     email: { type: String }
-}));
+}))
 
-let modules;
+let modules
 https(config.resources.moses.getLinkToAllModules(), (data) => { modules = Modul.getModules(data) })
 
 app.get('/moses', (req, res) => {
