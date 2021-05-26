@@ -16,8 +16,8 @@ const config = {
             getLinkToAllModules() {
                 return internal.resources.moses.linkPrefix + internal.resources.moses.allModules
             },
-            getFullLinkTo(number, version) {
-                return internal.resources.moses.linkPrefix + `beschreibung/anzeigen.html?nummer=${number}&version=${version}&sprache=1`
+            getFullLinkTo(number, version, language) {
+                return internal.resources.moses.linkPrefix + `beschreibung/anzeigen.html?nummer=${number}&version=${version}&sprache=${language}`
             }
         }
     }   
