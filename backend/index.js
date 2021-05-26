@@ -52,24 +52,33 @@ app.get('/moses/:id', (req, res) => {
         res.send({ err: "Wrong module not found" })
         return
     }
-    findModuleWithModuleNumber(moduleNumber, res)
+    const modulInfo = modules.find(e => e.number === moduleNumber)
+    if (!modulInfo) {
+        res.send({ err: "Wrong module not found" })
+        return
+    }
+    findModuleWithModuleNumber(moduleNumber, modulInfo, res)
 })
 
-function findModuleWithModuleNumber(moduleNumber, res) {
-    MosesModule.findOne({ 'nummer': moduleNumber }, function (err, doc) {
+function findModuleWithModuleNumber(moduleNumber, modulInfo, res) {
+    MosesModule.findOne({ 'number': moduleNumber }, function (err, doc) {
         if (err || !doc) {
-            const modulInfo = modules.find(e => e.number === moduleNumber)
-            if (modulInfo) {
-                console.log("no db entry found. crawling, saving in db and sending...")
-                https(config.resources.moses.getFullLinkTo(modulInfo.number, modulInfo.version, 1), (datager) => {
-                    https(config.resources.moses.getFullLinkTo(modulInfo.number, modulInfo.version, 2), (dataeng) => {
-                        const newModule = createModule(moduleNumber, modulInfo.version, dataeng, datager)
-                        res.send(newModule)
-                    })
+            console.log("no db entry found. crawling, saving in db and sending...")
+            https(config.resources.moses.getFullLinkTo(modulInfo.number, modulInfo.version, 1), (datager) => {
+                https(config.resources.moses.getFullLinkTo(modulInfo.number, modulInfo.version, 2), (dataeng) => {
+                    let newModule = new MosesModule()
+                    newModule = createModule(newModule, moduleNumber, modulInfo.version, dataeng, datager)
+                    res.send(newModule)
                 })
-            } else {
-                res.send({ err: "Wrong module not found" })
-            }
+            })
+        } else if (modulInfo.version != doc.version) {
+            console.log("db entry outdated. crawling, saving in db and sending...")
+            https(config.resources.moses.getFullLinkTo(modulInfo.number, modulInfo.version, 1), (datager) => {
+                https(config.resources.moses.getFullLinkTo(modulInfo.number, modulInfo.version, 2), (dataeng) => {
+                    let newModule = createModule(doc, moduleNumber, modulInfo.version, dataeng, datager)
+                    res.send(newModule)
+                })
+            })
         } else {
             console.log("sending data from db...")
             res.send(doc)
@@ -77,8 +86,7 @@ function findModuleWithModuleNumber(moduleNumber, res) {
     })
 }
 
-function createModule(modulNummer, modulVersion, dataeng, datager) {
-    const newModule = new MosesModule()
+function createModule(newModule, modulNummer, modulVersion, dataeng, datager) {
     newModule.number = modulNummer
     newModule.version = modulVersion
     newModule.german.title = Module.getTitle(datager, 1)
