@@ -9,7 +9,7 @@ const internal = {
 const config = {
     network: {
         port: 3000,
-        mongoURI: "CHANGE ME"
+        mongoURI: "mongodb+srv://tutorai:I7AzVJYC1uBFVaJJ@cluster0.crt0y.mongodb.net/tutorai?retryWrites=true&w=majority"
     },
     resources: {
         moses: {

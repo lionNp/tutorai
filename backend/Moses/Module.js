@@ -29,50 +29,70 @@ class Module {
     static getTitel(html) {
         const regex = /<h1>([\s\S]*?)<\/h1>/
         return getFirstGroupOfRegex(regex, html)
+
     }
 
-    static getLernergebnisse(html) {
-        const regex = /Lernergebnisse<\/h3>\s*<\/div>\s*<div class="col-xs-12">\s*<span class="preformatedTextarea">([\s\S]*?)<\/span>/
+    static getLearningOutcomes(html, language) {
+        const regex = language == 1 ?
+            /Lernergebnisse<\/h3>\s*<\/div>\s*<div class="col-xs-12">\s*<span class="preformatedTextarea">([\s\S]*?)<\/span>/ :
+            /Learning Outcomes<\/h3>\s*<\/div>\s*<div class="col-xs-12">\s*<span class="preformatedTextarea">([\s\S]*?)<\/span>/
         return getFirstGroupOfRegex(regex, html)
     }
 
-    static getLehrinhalte(html) {
-        const regex = /Lehrinhalte<\/h3>\s*<\/div>\s*<div class="col-xs-12">\s*<span class="preformatedTextarea">([\s\S]*?)<\/span>/
+    static getContent(html, language) {
+        const regex = language == 1 ?
+            /Lehrinhalte<\/h3>\s*<\/div>\s*<div class="col-xs-12">\s*<span class="preformatedTextarea">([\s\S]*?)<\/span>/ :
+            /Content<\/h3>\s*<\/div>\s*<div class="col-xs-12">\s*<span class="preformatedTextarea">([\s\S]*?)<\/span>/
         return getFirstGroupOfRegex(regex, html)
     }
 
-    static getFakultaet(html) {
+    static getFaculty(html) {
         const regex = /Fakultät:<\/label>[\s\S]*?\/>(.*)/
         return getFirstGroupOfRegex(regex, html)
     }
 
-    static getSekretariat(html) {
+    static getOffice(html) {
         const regex = /Sekretariat:<\/label>[\s\S]*?\/>(.*)/
         return getFirstGroupOfRegex(regex, html)
     }
 
-    static getInstitut(html) {
+    static getInstitute(html) {
         const regex = /Institut:<\/label>[\s\S]*?\/>(.*)/
         return getFirstGroupOfRegex(regex, html)
     }
 
-    static getFachgebiet(html) {
+    static getAreaOfExpertise(html) {
         const regex = /Fachgebiet:<\/label>[\s\S]*?\/>(.*)/
         return getFirstGroupOfRegex(regex, html)
     }
 
-    static getVerantwortlich(html) {
+    static getResponsiblePerson(html) {
         const regex = /Verantwortliche Person:<\/label>[\s\S]*?\/>(.*)/
         return getFirstGroupOfRegex(regex, html)
     }
 
-    static getAnsprechpartner(html) {
+    static getContactPerson(html) {
         const regex = /Ansprechpartner:<\/label>[\s\S]*?\/>(.*)/
         return getFirstGroupOfRegex(regex, html)
     }
 
     static getEmail(html) {
         const regex = /E-Mail-Adresse:<\/label>[\s\S]*?\/>(.*)/
+        return getFirstGroupOfRegex(regex, html)
+    }
+
+    static getCredits(html) {
+        const regex = /Leistungspunkte:<\/label>[\s\S]*?<span[\s\S]*?>(\d*)/
+        return getFirstGroupOfRegex(regex, html)
+    }
+
+    static getTypeOfExam(html) {
+        const regex = /Type of exam<\/h4>([\s\S]*?)</
+        return getFirstGroupOfRegex(regex, html)
+    }
+
+    static getWebsite(html) {
+        const regex = /Webseite:<\/label>[\s\S]*?<a href="([\s\S]*?)"/
         return getFirstGroupOfRegex(regex, html)
     }
 }

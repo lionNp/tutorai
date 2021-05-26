@@ -14,18 +14,30 @@ mongoose.connect(config.network.mongoURI, {
 })
 
 const MosesModule = mongoose.model('MosesModule', new mongoose.Schema({
-    nummer: { type: Number },
-    titel: { type: String },
-    lernergebnisse: { type: String },
-    lehrinhalte: { type: String },
-    fakultaet: { type: String },
-    sekretariat: { type: String },
-    institut: { type: String },
-    fachgebiet: { type: String },
-    verantwortlich: { type: String },
-    ansprechpartner: { type: String },
-    email: { type: String }
+    number: { type: Number },
+    version: { type: Number },
+    faculty: { type: String },
+    office: { type: String },
+    institute: { type: String },
+    areaOfExpertise: { type: String },
+    responsiblePerson: { type: String },
+    contactPerson: { type: String },
+    email: { type: String },
+    credits: { type: Number },
+    typeOfExam: { type: String },
+    website: { type: String },
+    german: {
+        learningOutcomes: { type: String },
+        content: { type: String },
+        title: { type: String },
+    },
+    english: {
+        learningOutcomes: { type: String },
+        content: { type: String },
+        title: { type: String }
+    }
 }))
+
 
 let modules
 https(config.resources.moses.getLinkToAllModules(), (data) => { modules = Module.getModules(data) })
@@ -35,7 +47,7 @@ app.get('/moses', (req, res) => {
 })
 
 app.get('/moses/:id', (req, res) => {
-    const moduleNumber = req.params.id
+    const moduleNumber = parseInt(req.params.id)
     if (!moduleNumber) {
         res.send({ err: "Wrong module not found" })
         return
@@ -49,9 +61,11 @@ function findModuleWithModuleNumber(moduleNumber, res) {
             const modulInfo = modules.find(e => e.number === moduleNumber)
             if (modulInfo) {
                 console.log("no db entry found. crawling, saving in db and sending...")
-                https(config.resources.moses.getFullLinkTo(modulInfo.number, modulInfo.version), (data) => {
-                    const newModule = createModule(moduleNumber, data)
-                    res.send(newModule)
+                https(config.resources.moses.getFullLinkTo(modulInfo.number, modulInfo.version, 1), (datager) => {
+                    https(config.resources.moses.getFullLinkTo(modulInfo.number, modulInfo.version, 2), (dataeng) => {
+                        const newModule = createModule(moduleNumber, modulInfo.version, dataeng, datager)
+                        res.send(newModule)
+                    })
                 })
             } else {
                 res.send({ err: "Wrong module not found" })
@@ -63,19 +77,26 @@ function findModuleWithModuleNumber(moduleNumber, res) {
     })
 }
 
-function createModule(modulNummer, data) {
+function createModule(modulNummer, modulVersion, dataeng, datager) {
     const newModule = new MosesModule()
-    newModule.nummer = modulNummer
-    newModule.titel = Module.getTitel(data)
-    newModule.lernergebnisse = Module.getLernergebnisse(data)
-    newModule.lehrinhalte = Module.getLehrinhalte(data)
-    newModule.fakultaet = Module.getFakultaet(data)
-    newModule.sekretariat = Module.getSekretariat(data)
-    newModule.institut = Module.getInstitut(data)
-    newModule.fachgebiet = Module.getFachgebiet(data)
-    newModule.verantwortlich = Module.getVerantwortlich(data)
-    newModule.ansprechpartner = Module.getAnsprechpartner(data)
-    newModule.email = Module.getEmail(data)
+    newModule.number = modulNummer
+    newModule.version = modulVersion
+    newModule.german.title = Module.getTitle(datager, 1)
+    newModule.german.learningOutcomes = Module.getLearningOutcomes(datager, 1)
+    newModule.german.content = Module.getContent(datager, 1)
+    newModule.english.title = Module.getTitle(dataeng, 2)
+    newModule.english.learningOutcomes = Module.getLearningOutcomes(dataeng, 2)
+    newModule.english.content = Module.getContent(dataeng, 2)
+    newModule.faculty = Module.getFaculty(datager)
+    newModule.office = Module.getOffice(datager)
+    newModule.institute = Module.getInstitute(datager)
+    newModule.areaOfExpertise = Module.getAreaOfExpertise(datager)
+    newModule.responsiblePerson = Module.getResponsiblePerson(datager)
+    newModule.contactPerson = Module.getContactPerson(datager)
+    newModule.email = Module.getEmail(datager)
+    newModule.credits = Module.getCredits(datager)
+    newModule.typeOfExam = Module.getTypeOfExam(dataeng)
+    newModule.website = Module.getWebsite(datager)
     newModule.save()
     return newModule
 }
