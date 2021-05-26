@@ -64,18 +64,18 @@ function findModuleWithModuleNumber(moduleNumber, modulInfo, res) {
     MosesModule.findOne({ 'number': moduleNumber }, function (err, doc) {
         if (err || !doc) {
             console.log("no db entry found. crawling, saving in db and sending...")
-            https(config.resources.moses.getFullLinkTo(modulInfo.number, modulInfo.version, 1), (datager) => {
-                https(config.resources.moses.getFullLinkTo(modulInfo.number, modulInfo.version, 2), (dataeng) => {
+            https(config.resources.moses.getFullLinkTo(modulInfo.number, modulInfo.version, 1), (germanData) => {
+                https(config.resources.moses.getFullLinkTo(modulInfo.number, modulInfo.version, 2), (englishData) => {
                     let newModule = new MosesModule()
-                    newModule = createModule(newModule, moduleNumber, modulInfo.version, dataeng, datager)
+                    newModule = createModule(newModule, modulInfo, englishData, germanData)
                     res.send(newModule)
                 })
             })
         } else if (modulInfo.version != doc.version) {
             console.log("db entry outdated. crawling, saving in db and sending...")
-            https(config.resources.moses.getFullLinkTo(modulInfo.number, modulInfo.version, 1), (datager) => {
-                https(config.resources.moses.getFullLinkTo(modulInfo.number, modulInfo.version, 2), (dataeng) => {
-                    let newModule = createModule(doc, moduleNumber, modulInfo.version, dataeng, datager)
+            https(config.resources.moses.getFullLinkTo(modulInfo.number, modulInfo.version, 1), (germanData) => {
+                https(config.resources.moses.getFullLinkTo(modulInfo.number, modulInfo.version, 2), (englishData) => {
+                    let newModule = createModule(doc, modulInfo, englishData, germanData)
                     res.send(newModule)
                 })
             })
@@ -86,25 +86,25 @@ function findModuleWithModuleNumber(moduleNumber, modulInfo, res) {
     })
 }
 
-function createModule(newModule, modulNummer, modulVersion, dataeng, datager) {
-    newModule.number = modulNummer
-    newModule.version = modulVersion
-    newModule.german.title = Module.getTitle(datager, 1)
-    newModule.german.learningOutcomes = Module.getLearningOutcomes(datager, 1)
-    newModule.german.content = Module.getContent(datager, 1)
-    newModule.english.title = Module.getTitle(dataeng, 2)
-    newModule.english.learningOutcomes = Module.getLearningOutcomes(dataeng, 2)
-    newModule.english.content = Module.getContent(dataeng, 2)
-    newModule.faculty = Module.getFaculty(datager)
-    newModule.office = Module.getOffice(datager)
-    newModule.institute = Module.getInstitute(datager)
-    newModule.areaOfExpertise = Module.getAreaOfExpertise(datager)
-    newModule.responsiblePerson = Module.getResponsiblePerson(datager)
-    newModule.contactPerson = Module.getContactPerson(datager)
-    newModule.email = Module.getEmail(datager)
-    newModule.credits = Module.getCredits(datager)
-    newModule.typeOfExam = Module.getTypeOfExam(dataeng)
-    newModule.website = Module.getWebsite(datager)
+function createModule(newModule, modulInfo, englishData, germanData) {
+    newModule.number = modulInfo.number
+    newModule.version = modulInfo.version
+    newModule.german.title = Module.getTitle(germanData, 1)
+    newModule.german.learningOutcomes = Module.getLearningOutcomes(germanData, 1)
+    newModule.german.content = Module.getContent(germanData, 1)
+    newModule.english.title = Module.getTitle(englishData, 2)
+    newModule.english.learningOutcomes = Module.getLearningOutcomes(englishData, 2)
+    newModule.english.content = Module.getContent(englishData, 2)
+    newModule.faculty = Module.getFaculty(germanData)
+    newModule.office = Module.getOffice(germanData)
+    newModule.institute = Module.getInstitute(germanData)
+    newModule.areaOfExpertise = Module.getAreaOfExpertise(germanData)
+    newModule.responsiblePerson = Module.getResponsiblePerson(germanData)
+    newModule.contactPerson = Module.getContactPerson(germanData)
+    newModule.email = Module.getEmail(germanData)
+    newModule.credits = Module.getCredits(germanData)
+    newModule.typeOfExam = Module.getTypeOfExam(englishData)
+    newModule.website = Module.getWebsite(germanData)
     newModule.save()
     return newModule
 }
