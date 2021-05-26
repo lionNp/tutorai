@@ -4,9 +4,25 @@ class Module {
         let results = []
         let result = regex.exec(html)
         while (result) {
-            results.push({ number: result[1], version: result[2], title: result[3] })
+            results.push({ number: parseInt(result[1]), version: parseInt(result[2]), title: result[3] })
             result = regex.exec(html)
         }
+
+        results.sort((a, b) => {
+            const numberDiff = a.number - b.number;
+            if (numberDiff == 0)
+                return a.version - a.version;
+            return numberDiff
+        })
+
+        results = results.filter(module => {
+            for (const otherModule of results) {
+                if (otherModule.number == module.number && otherModule.version > module.version)
+                    return false
+            }
+            return true
+        })
+
         return results
     }
 
@@ -16,12 +32,12 @@ class Module {
     }
 
     static getLernergebnisse(html) {
-        const regex = /Lernergebnisse<\/h3>\s*<\/div>\s*<div class="col-xs-12">\s*<span class="preformatedTextarea">([\s\S]*?)<\/div>/
+        const regex = /Lernergebnisse<\/h3>\s*<\/div>\s*<div class="col-xs-12">\s*<span class="preformatedTextarea">([\s\S]*?)<\/span>/
         return getFirstGroupOfRegex(regex, html)
     }
 
     static getLehrinhalte(html) {
-        const regex = /Lehrinhalte<\/h3>\s*<\/div>\s*<div class="col-xs-12">\s*<span class="preformatedTextarea">([\s\S]*?)<\/div>/
+        const regex = /Lehrinhalte<\/h3>\s*<\/div>\s*<div class="col-xs-12">\s*<span class="preformatedTextarea">([\s\S]*?)<\/span>/
         return getFirstGroupOfRegex(regex, html)
     }
 
