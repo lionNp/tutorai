@@ -4,7 +4,7 @@ class Module {
         let results = []
         let result = regex.exec(html)
         while (result) {
-            results.push({ number: parseInt(result[1]), version: parseInt(result[2]), title: result[3] })
+            results.push({number: parseInt(result[1]), version: parseInt(result[2]), title: result[3]})
             result = regex.exec(html)
         }
 
@@ -26,8 +26,8 @@ class Module {
         return results
     }
 
-    static getTitel(html) {
-        const regex = /<h1>([\s\S]*?)<\/h1>/
+    static getTitle(html, language) {
+        const regex = language == 1 ? /<h1>([\s\S]*?)<\/h1>/ : /<small><span style="font-size: x-large;">([\s\S]*?)<\/span>\s*<\/small>/
         return getFirstGroupOfRegex(regex, html)
 
     }
